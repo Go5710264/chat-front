@@ -3,6 +3,36 @@ body, ul {
     padding: 0;
 }
 
+li{
+    list-style-type: none;
+}
+
+.display-hide{
+    display: none;
+}
+
+.wrapper-nickname-entry-form{
+    width: 300px;
+}
+
+.nickname-entry-form{
+    display: flex;
+    flex-direction: column;
+}
+
+.communication-window{
+    display: flex;
+    justify-content: space-between;
+
+    width: 500px;
+}
+
+.chat-wrapper{
+    /* width: 500px; */
+
+
+}
+
 .subscriptions, .chat{
     white-space: pre;
 }

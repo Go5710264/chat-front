@@ -1,71 +1,57 @@
 // TODO: write your code here
-// import WebSocket from 'ws';
+import SubscriptionApi from '../components/SubscriptionAPI'
+import createElementLI, { creatingMessageElement } from './createElement'
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  class SubscriptionApi {
-    constructor(apiUrl){
-      this.apiUrl = apiUrl;
-    }
+  const nickname = document.querySelector('.nickname-input-field');
+  // поле ввода никнейма
 
-    async add(user){
-      const request = await fetch(this.apiUrl + 'subscriptions/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user), 
-      })
+  const nicknameSendingButton = document.querySelector('.nickname-entry-form-button');
+  // кнопка отправки никнейма на сервер
 
-      const result = await request; 
+  const windowSubscribers = document.querySelector('.subscriptions')
+  // поле со списком никнеймов
 
-      if(!result.ok){
-        console.error('Ошибка!')
+  let user; // переменная с никнеймом пользователя
 
-        return;
+  nicknameSendingButton.addEventListener('click', (e) => {
+    // событие при обработки ввода никнейма
+
+    e.preventDefault();
+
+    user = nickname.value; // инициализация никнейма
+
+    api.add({"name": user}).then( // отправка никнейма на сервер
+      result => { // по завершении запроса
+        const niknameItem = Array.from(windowSubscribers.children)
+          .find(item => item.textContent === user)
+          // найти никнейм пользователя страницы в общем списке
+
+        niknameItem.textContent = 'You'; // заменить его на 'You'
       }
+    )
+  })
 
-      const json = await result.json();
-
-      const status = json.status;
-
-      console.log(status)
-    }
-
-    async remove(user){
-      const query = 'subscription/' + encodeURIComponent(user.phone);
-      // Так как у DELETE нет тела запроса, запрос необходимо отправлять в строке браузера
-
-      const request = await fetch(this.apiUrl + query, {
-        method: 'DELETE', // у данного метода нет тела запроса
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      })
-
-      const result = await request; 
-
-      if(!result.ok){
-        console.error('Ошибка!')
-
-        return;
-      }
-
-      const json = await result.json();
-
-      const status = json.status;
-
-      console.log(status)
-    }
-  }
-
-  const eventSource = new EventSource('http://localhost:7070/sse')
-
+  const eventSource = new EventSource('http://localhost:7070/sse');
+  // инициализация SSE соединения (получение сообщений с сервера при обновлении данных)
+  
   eventSource.addEventListener('open', (e) => {
+  // событие при ОТКРЫТИИ соединения с сервером
+
     console.log(e);
+    
+    api.getSubscribers().then( 
+    // отправка запроса на получение списка пользователей чата
+      result => result.forEach(item => { // результат запроса проитерировать
+        createElementLI(item.name);
+        // отобразить каждый никнейм на странице
+      })
+    )
     
     console.log('sse open')
   });
+
 
   eventSource.addEventListener('error', (e)=> {
     console.log(e);
@@ -73,46 +59,55 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('sse error')
   })
 
-  const subscriptions = document.querySelector('.subscriptions')
 
   eventSource.addEventListener('message', (e) => {
+  // событие при ОБНОВЛЕНИИ данных на сервере
+
     console.log(e);
 
-    const { phone, name } = JSON.parse(e.data);
+    const { name } = JSON.parse(e.data);
+    // инициализация никнейма добаленного на сервер
 
-    subscriptions.appendChild(document.createTextNode(`${name} ${phone}\n`))
-    
+    createElementLI(name); // отобразить новый никнейм на странице
+
     console.log('sse message')
   })
 
-  const ws = new WebSocket('ws://localhost:7070/ws')// на вход принимается URL без протокола HTTP
+  const ws = new WebSocket('ws://localhost:7070/ws');
+  // инициализация WS соединения (двусторонний обмен данных)
 
-  const chat = document.querySelector('.chat');
-  const chatMessage = document.querySelector('.chat-message')
-  const chatSend = document.querySelector('.chat-send');
+  const chat = document.querySelector('.chat'); // доступ к окну чата
+  const chatMessage = document.querySelector('.chat-message'); // поле ввода сообщения
+  const chatSend = document.querySelector('.chat-send'); // кнопка отправить
 
   chatSend.addEventListener('click', () => {
-    console.log(chatMessage.value)
-    const message = chatMessage.value;
+  // событие клика на кнопку отправить
 
-    if(!message) return;
+    const message = chatMessage.value; 
+    // инициализация сообщения введенного в поле ввода
 
-    ws.send(message);
+    if(!message) return; // если сообщения нет, выйти из функции
 
-    chatMessage.value = '';
+    ws.send(message); // отправка WS запроса с данными на сервер 
+
+    chatMessage.value = ''; // очистить поле ввода
   })
 
   ws.addEventListener('open', (e)=> {
+  // событие открытия WS соединения с сервером 
     console.log(e);
     
     console.log('ws open')
   })
 
   ws.addEventListener('close', (e)=> {
+  // событие закрытия WS соединения с сервером 
     console.log(e);
     
     console.log('ws close')
   })
+
+  // Проблема состоит в том что необоходимо показывать имя вместе с сообщением (отправлять никнейм вместе с сообщением?). Необоходимо фиксировать YOU на своем никнейме
 
   ws.addEventListener('error', (e)=> {
     console.log(e);
@@ -121,16 +116,29 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   ws.addEventListener('message', (e)=> {
+  // событие при ОБНОВЛЕНИИ данных на сервере
+  
     console.log(e);
     
     const data = JSON.parse(e.data);
-    const { chat: messages } = data;
+    // спарсить данные полученные с сервера
 
-    messages.forEach(message => {
-      chat.appendChild(document.createTextNode(message + '\n'))
-    });
+    const { chat: messages } = data;
+    // деструкция объекта с переприсвоением названия свойства новой переменной
+
+    if(messages.length > 1) { // если сообщений более одного
+      messages.forEach(message => {
+      // проитерировать сообщения
+
+        creatingMessageElement(message);
+        // создать элементы с сообщением
+      });
+      return;
+    }
+
+    // иначе содать элемент с одним сообщением
+    creatingMessageElement(messages, 'You');
   })
 
   window.api = new SubscriptionApi ('http://localhost:7070/')
-  
 });
