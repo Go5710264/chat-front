@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  communicationWindow.style.opacity = '1'; // скрыть поле 
+  communicationWindow.style.opacity = '0.1'; // скрыть поле 
 
 
 
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  wrapperNicknameForm.style.opacity = '0'
+  wrapperNicknameForm.style.opacity = '1'
 
 
 
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // найти никнейм пользователя страницы в общем списке
 
         niknameItem.textContent = 'You'; // заменить его на 'You'
+        niknameItem.style.color = '#ffd300';
         nickname.value = '';
         communicationWindow.style.opacity = '1'; // скрыть поле 
         wrapperNicknameForm.classList.add('display-hide');

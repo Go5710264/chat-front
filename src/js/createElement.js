@@ -1,7 +1,6 @@
-// import { user as client } from './app';
-
 const subscriptions = document.querySelector('.subscriptions');
 const chat = document.querySelector('.chat'); // доступ к окну чата
+const chatContainer = document.querySelector('.chat-container')
 
 function formatDate(date) {
   return `${date.getHours()}:${
@@ -14,6 +13,9 @@ function formatDate(date) {
 export default function createElementLI(content) {
   const arr = Array.from(subscriptions.children);
   const index = arr.findIndex((item) => item.textContent === content);
+  console.log(content)
+  console.log(arr)
+
 
   if (index !== -1) {
     subscriptions.removeChild(subscriptions.children[index]);
@@ -22,6 +24,7 @@ export default function createElementLI(content) {
   }
 
   const elem = document.createElement('li');
+  elem.classList.add('subscriber')
   elem.textContent = content;
 
   subscriptions.appendChild(elem);
@@ -46,8 +49,8 @@ export function creatingMessageElement(content, user, date, client) {
 
   userMessage.appendChild(nick);
   userMessage.appendChild(span);
-
-  chat.scrollTop = chat.scrollHeight;
+  client === user ? userMessage.classList.add('user-msg') : userMessage.classList.add('msg')
 
   chat.appendChild(userMessage);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
