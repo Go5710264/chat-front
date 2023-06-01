@@ -58,8 +58,6 @@ li{
     margin: 6px auto 0;
     padding: 5px;
 
-    /* width: 100px; */
-
     border: none;
     border-radius: 3px;
 
@@ -212,7 +210,3 @@ li{
 .chat-send:focus{
     outline: none;
 }
-
-/* .subscriptions, .chat{
-    white-space: pre;
-} */

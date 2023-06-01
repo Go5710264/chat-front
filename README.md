@@ -4,7 +4,8 @@
 
 <br>
 
-Реализованы клиентская и [серверная](https://github.com/Go5710264/chat-back.git) части. 
+Реализованы клиентская и [серверная](https://github.com/Go5710264/chat-back.git) части.
+<br> 
 В серверной части применяются технологии **WebSocket** и **ServerSentEvents**.
 
 <br>
