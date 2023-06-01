@@ -17,8 +17,5 @@
           "devDependencies": true
         }
       ]
-    },
-    "globals": {
-      "api":"writable"
     }
   }

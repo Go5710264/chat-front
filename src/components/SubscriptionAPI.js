@@ -3,7 +3,7 @@ export default class SubscriptionApi {
     this.apiUrl = apiUrl;
   }
 
-  async add(user) {
+  async add(user) { // отправка нового никнейма на сервер
     const request = await fetch(`${this.apiUrl}subscriptions/`, {
       method: 'POST',
       headers: {
@@ -14,40 +14,42 @@ export default class SubscriptionApi {
 
     const result = await request;
 
-    if (!result.ok) {
+    if (!result.ok) { // обработка ошибки
       throw new Error('Ошибка!');
     }
 
     const json = await result.json();
+    // обработать ответ сервера
 
-    const { status } = json;
+    const { status } = json; // получить статус ответа
 
     return status;
   }
 
-  async getSubscribers() {
-    console.log('hi');
+  async getSubscribers() { // получение списка подписчиков
+    console.log('hi')
     const request = await fetch(`${this.apiUrl}subscriptions/full`, {
       method: 'GET',
     });
 
-    const result = await request;
+    const result = await request; // получение ответа сервера
 
-    if (!result.ok) {
+    if (!result.ok) { // обработка ошибки ответа
       console.error('Ошибка!');
     }
 
-    const json = await result.json();
+    const json = await result.json(); // обработка отвера
 
-    return json;
+    return json; // вернуть массив с подписчиками
   }
 
-  async remove(user) {
-    console.log('hi');
+  async remove(user) { // удаление подписчика
+    console.log('hi')
     const query = `subscriptions/${encodeURIComponent(user)}`;
+    // Так как у DELETE нет тела запроса, запрос необходимо отправлять в строке браузера
 
     const request = await fetch(this.apiUrl + query, {
-      method: 'DELETE',
+      method: 'DELETE', // у данного метода нет тела запроса
       headers: {
         'Content-Type': 'application/json',
       },
