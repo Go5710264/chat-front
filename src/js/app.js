@@ -5,6 +5,32 @@ import createElementLI, { creatingMessageElement } from './createElement';
 let user; // переменная с никнеймом пользователя
 
 document.addEventListener('DOMContentLoaded', () => {
+  const communicationWindow = document.querySelector('.communication-window');
+  // доступ к обертке чата и к полю с никнеймами
+
+
+
+  communicationWindow.style.opacity = '1'; // скрыть поле 
+
+
+
+  
+
+  const wrapperNicknameForm = document.querySelector('.wrapper-nickname-entry-form');
+  // доступ к обертке формы
+
+
+
+
+  wrapperNicknameForm.style.opacity = '0'
+
+
+
+
+
+  const formValidator = wrapperNicknameForm.querySelector('.nickname-form-validator'); 
+  // доступ к элементу валидатора
+
   const nickname = document.querySelector('.nickname-input-field');
   // поле ввода никнейма
 
@@ -22,14 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
     user = nickname.value; // инициализация никнейма
 
     api.add({ name: user }).then( // отправка никнейма на сервер
-      (result) => { // по завершении запроса
+      result => { // по завершении запроса
         const niknameItem = Array.from(windowSubscribers.children)
           .find((item) => item.textContent === user);
           // найти никнейм пользователя страницы в общем списке
 
         niknameItem.textContent = 'You'; // заменить его на 'You'
         nickname.value = '';
+        communicationWindow.style.opacity = '1'; // скрыть поле 
+        wrapperNicknameForm.classList.add('display-hide');
       },
+      reject => {
+        console.log(reject)
+
+        formValidator.textContent = `Никнейм ${user} уже занят, введите другой`;
+        // добавить к форме текст с предупреждением
+      }
     );
   });
 

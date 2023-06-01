@@ -31,18 +31,23 @@ export function creatingMessageElement(content, user, date, client) {
   const userMessage = document.createElement('li'); // создание элемента с сообщением
 
   const nick = document.createElement('h3'); // создание элемента с никнеймом
+  nick.classList.add('chat-user-nickname')
   nick.textContent = client === user ? 'You' : user;
 
   const time = document.createElement('time');
+  time.classList.add('sending-time')
   const timeSendingMessage = new Date(date);
-  time.textContent = formatDate(timeSendingMessage);
+  time.textContent = ' ' + formatDate(timeSendingMessage);
   nick.appendChild(time);
 
   const span = document.createElement('span');
+  span.classList.add('chat-msg')
   span.textContent = content;
 
   userMessage.appendChild(nick);
   userMessage.appendChild(span);
+
+  chat.scrollTop = chat.scrollHeight;
 
   chat.appendChild(userMessage);
 }

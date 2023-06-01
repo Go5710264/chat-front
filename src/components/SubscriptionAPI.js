@@ -14,21 +14,8 @@ export default class SubscriptionApi {
 
     const result = await request;
 
-    if (!result.ok) { // обработка ошики
-      const json = await result.json();
-
-      const { status } = json;
-
-      if (status === 'subscripiton exists') { // если подписчик уже есть
-        const form = document.querySelector('.nickname-entry-form'); // найти форму
-
-        form.appendChild(document.createTextNode(`Никнейм ${user.name} уже занят, введите другой\n`));
-        // добавить к форме текст с предупреждением
-      }
-
-      console.error('Ошибка!');
-
-      return;
+    if (!result.ok) { // обработка ошибки
+      throw new Error('Ошибка!');
     }
 
     const json = await result.json();
@@ -36,7 +23,7 @@ export default class SubscriptionApi {
 
     const { status } = json; // получить статус ответа
 
-    console.log(status);
+    return status;
   }
 
   async getSubscribers() { // получение списка подписчиков
@@ -51,9 +38,9 @@ export default class SubscriptionApi {
       console.error('Ошибка!');
     }
 
-    // const json = await result.json(); // обработка отвера
+    const json = await result.json(); // обработка отвера
 
-    // return json; // вернуть массив с подписчиками
+    return json; // вернуть массив с подписчиками
   }
 
   async remove(user) { // удаление подписчика
